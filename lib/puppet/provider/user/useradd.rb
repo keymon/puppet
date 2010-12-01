@@ -39,8 +39,11 @@ Puppet::Type.type(:user).provide :useradd, :parent => Puppet::Provider::NameServ
 
   def check_manage_expiry
     cmd = []
-    if @resource[:expiry]
-      cmd << "-e #{@resource[:expiry]}"
+    if @resource[:expiry] and @resource[:expiry] =~ /^(\d{4}-\d{2}-\d{2})(\s+\d{2}:\d{2})?$/
+      cmd << "-e #{$1}"
+      if $2
+        Puppet.warn("Time '#{$2}' is ignored for expiry parameter '#{@resource[:expiry]}' on #{@resource.class.name}[#{@resource.name}]")
+      end
     end
 
     cmd

@@ -256,10 +256,11 @@ module Puppet
 
     newproperty(:expiry, :required_features => :manages_expiry) do
       desc "The expiry date for this user. Must be provided in
-           a zero padded YYYY-MM-DD format - e.g 2010-02-19."
+           a zero padded 'YYYY-MM-DD [HH:MM]' format -
+           e.g 2010-02-19 or 2010-02-19 01:23."
 
       validate do |value|
-        if value !~ /^\d{4}-\d{2}-\d{2}$/
+        if value !~ /^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2})?$/
           raise ArgumentError, "Expiry dates must be YYYY-MM-DD"
         end
       end
