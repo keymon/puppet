@@ -222,6 +222,12 @@ module Puppet
       end
     end
 
+    newparam(:force) do
+      desc "This paramter is checked in dangerous operations that might mean
+            losing data, like FS removal in AIX, that means delete de logical volume.
+            Set it to 'Yes, I am sure'"
+    end
+
     def refresh
       # Only remount if we're supposed to be mounted.
       provider.remount if self.should(:fstype) != "swap" and self.should(:ensure) == :mounted

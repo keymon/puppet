@@ -140,8 +140,8 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
       args = [ "-a", "size=#{value}" ]
     elsif key == :volume
       args = [ "-g", value ]
-    else
-      Puppet.debug "Can not handle parameter '#{key.to_s}' in  #{@resource.class.name} #{@resource.name}."
+    #else
+    #  Puppet.debug "No adding arguments for param '#{key.to_s}' in  #{@resource.class.name} #{@resource.name}."
     end
     return args
     
@@ -162,11 +162,11 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
     # Check to protect from incorrect removals.         
     if ((objectinfo[:fstype] and objectinfo[:fstype] !~ /^nfs/) or
         (objectinfo[:device] and ! objectinfo[:device].include? ':')) and
-        ! (@resource[:options] and @resource[:options].downcase == "i am sure")
+        ! (@resource[:force] and @resource[:force].downcase == "yes, i am sure")
       raise Puppet::Error,
         "Cowardly refusing to remove #{@resource.class.name} #{@resource.name}. " +
         "It will silently delete the LV and remove all data. " +
-        "Set option parameter to 'I am sure' to force removal."
+        "Set 'force' parameter to 'Yes, I am sure' to force removal."
     end
     
     super
