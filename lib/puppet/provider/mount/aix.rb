@@ -39,6 +39,8 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
     {:aix_attr => :nodename,        :puppet_prop => :nodename},
     {:aix_attr => :vfs,             :puppet_prop => :fstype},
     {:aix_attr => :options,         :puppet_prop => :options},
+    {:aix_attr => :size,            :puppet_prop => :size},
+    {:aix_attr => :volume,          :puppet_prop => :volume},
   ]
   
   #--------------
@@ -134,6 +136,10 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
       args = [ "-a", "options=#{value}" ]
     elsif key == :fstype
       args = [ "-v", value ]
+    elsif key == :size
+      args = [ "-a", "size=#{value}" ]
+    elsif key == :volume
+      args = [ "-g", value ]
     else
       Puppet.debug "Can not handle parameter '#{key.to_s}' in  #{@resource.class.name} #{@resource.name}."
     end

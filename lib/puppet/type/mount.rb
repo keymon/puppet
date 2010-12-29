@@ -208,6 +208,20 @@ module Puppet
       end
     end
 
+    newparam(:volume) do
+      desc "The volume group to use when creating the FS in AIX"
+    end
+
+    newparam(:size) do
+      desc "The filesystem initial size when creating the FS. Used in AIX"
+
+      validate do |value|
+        if value.to_s !~ /^\d+[MGmg]?$/
+          raise ArgumentError, "Size must be specified in 512b blocks, Megabytes (100M) or Gigabytes (1G)"
+        end
+      end
+    end
+
     def refresh
       # Only remount if we're supposed to be mounted.
       provider.remount if self.should(:fstype) != "swap" and self.should(:ensure) == :mounted
