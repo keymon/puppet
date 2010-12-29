@@ -67,7 +67,7 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
       # In the chnfsmnt command, the hostname is specified with '-h', not '-n'
       args = self.hash2args(hash)
       args.map!{|x| case x when '-n' then '-h' when '-V' then '-m' else x end}
-      [ self.class.command(:chnfsmnt), "-d", @resource[:name] ] + args
+      [ self.class.command(:chnfsmnt), "-f", @resource[:name] ] + args
     elsif hash[:fstype] and hash[:fstype] =~ /^nfs/
       # Add the device.
       # In the chnfsmnt command, the hostname is specified with '-h', not '-n'
