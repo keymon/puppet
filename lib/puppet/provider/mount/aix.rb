@@ -1,4 +1,12 @@
 #
+# Mount Puppet provider for AIX. It uses standard commands to manage filesystems:
+#  lsfs, mkfs, chfs, rmfs, chnfsmnt
+#
+# See  http://projects.puppetlabs.com/projects/puppet/wiki/Development_Provider_Development
+# for more information
+#
+# Author::    Hector Rivas Gandara <keymon@gmail.com>
+#
 require 'puppet/provider/aixobject'
 require 'puppet/provider/mount'
 
@@ -18,10 +26,13 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
   commands :delete    => "/usr/sbin/rmfs"
   commands :modify    => "/usr/sbin/chfs"
 
+  # Needed to change NFS mountpoints
   commands :chnfsmnt    => "/usr/sbin/chnfsmnt"
-  commands :mountcmd => "mount", :umount => "umount"
+  
+  # Mount commands 
+  commands :mountcmd => "/usr/sbin/mount", :umount => "/usr/sbin/umount"
 
-  # Mount functionality 
+  # Mount functionality from puppet
   include Puppet::Provider::Mount
   
   # Valid attributes to be managed by this provider.
@@ -62,9 +73,10 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
   end
 
   def modifycmd(hash = property_hash)
-    # Workaround. Chfs does not allow change the remote directory for
+    # This is a workaround. Chfs does not allow change the remote directory for
     # NFS mountpoints, so we will use chnfsmnt just for that 
     alt_hast = hash
+
     if hash[:device] and hash[:device] =~ /^.*:.*/
       # In the chnfsmnt command, the hostname is specified with '-h', not '-n'
       args = self.hash2args(hash)
@@ -95,6 +107,8 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
   end
   
   #--------------
+  
+  # Extend load_attribute for some attributes in AIX
   def load_attribute(key, value, mapping, objectinfo)
     if key == :automount
       # Convert the value to a bool
@@ -115,6 +129,7 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
     super(key, value, mapping, objectinfo)
   end
 
+  # Add some special arguments
   def get_arguments(key, value, mapping, objectinfo)
     args = []
     if key == :atboot
@@ -191,6 +206,5 @@ Puppet::Type.type(:mount).provide :aix, :parent => Puppet::Provider::AixObject d
     Puppet.debug "'pass' parameter is ignored in  this provider for #{@resource.class.name} #{@resource.name}."
     0
   end
-  
   
 end
