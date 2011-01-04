@@ -127,11 +127,7 @@ class Puppet::Provider::AixObject < Puppet::Provider
     end
 
     # convert it to string
-    if new_value.is_a? Array
-      new_value = new_value.join(",")
-    else
-      new_value = new_value.to_s
-    end
+    new_value = Array(new_value).join(',')
 
     if new_key
       return [ "#{new_key}=#{new_value}" ] 
